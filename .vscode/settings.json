@@ -52,6 +52,24 @@
         "codecvt": "cpp",
         "condition_variable": "cpp",
         "iomanip": "cpp",
-        "mutex": "cpp"
-    }
+        "mutex": "cpp",
+        "bitset": "cpp",
+        "charconv": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "csetjmp": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "regex": "cpp",
+        "format": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "shared_mutex": "cpp",
+        "span": "cpp",
+        "stop_token": "cpp",
+        "variant": "cpp",
+        "*.inc": "cpp",
+        "a": "cpp"
+    },
 }
