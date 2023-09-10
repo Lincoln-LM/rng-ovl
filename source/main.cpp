@@ -336,28 +336,32 @@ public:
             u64 npc_count = 0;
             u64 list_start;
             u64 list_end;
-            debug_handler.ReadHeapMemory(&list_start, 0x44129298 + 0xb0, sizeof(list_start));
-            debug_handler.ReadHeapMemory(&list_end, 0x44129298 + 0xb8, sizeof(list_end));
-            for (u64 current_npc = list_start; current_npc < list_end; current_npc += 8)
-            {
-                u64 temp;
-                u64 initialization_function;
-                debug_handler.ReadMemory(&temp, current_npc, sizeof(temp));
-                debug_handler.ReadMemory(&temp, temp, sizeof(temp));
-                debug_handler.ReadMemory(&initialization_function, temp + 0xf0, sizeof(temp));
-                initialization_function = debug_handler.normalizeMain(initialization_function);
-                if (
-                    initialization_function == 0xd600f0 ||
-                    initialization_function == 0xd6f6d0 ||
-                    initialization_function == 0xdaa010 ||
-                    initialization_function == 0xd5ba20)
-                {
-                    npc_count++;
+            Result rc = debug_handler.ReadHeapMemory(&list_start, 0x44129298 + 0xb0, sizeof(list_start));
+            if (R_SUCCEEDED(rc) && debug_handler.normalizeHeap(list_start) < 0x100000000) {
+                rc = debug_handler.ReadHeapMemory(&list_end, 0x44129298 + 0xb8, sizeof(list_end));
+                if (R_SUCCEEDED(rc) && debug_handler.normalizeHeap(list_end) < 0x100000000 && ((list_end - list_start) < 0x10000)) {
+                    for (u64 current_npc = list_start; current_npc < list_end; current_npc += 8)
+                    {
+                        u64 temp;
+                        u64 initialization_function;
+                        debug_handler.ReadMemory(&temp, current_npc, sizeof(temp));
+                        debug_handler.ReadMemory(&temp, temp, sizeof(temp));
+                        debug_handler.ReadMemory(&initialization_function, temp + 0xf0, sizeof(temp));
+                        initialization_function = debug_handler.normalizeMain(initialization_function);
+                        if (
+                            initialization_function == 0xd600f0 ||
+                            initialization_function == 0xd6f6d0 ||
+                            initialization_function == 0xdaa010 ||
+                            initialization_function == 0xd5ba20)
+                        {
+                            npc_count++;
+                        }
+                    }
+                    char text[11];
+                    snprintf(text, 11, "NPCs: %d", npc_count);
+                    npc_counter->setText(std::string(text));
                 }
             }
-            char text[11];
-            snprintf(text, 11, "NPCs: %d", npc_count);
-            npc_counter->setText(std::string(text));
 
             debug_handler.PollForBreaks();
         }
