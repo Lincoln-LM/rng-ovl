@@ -286,24 +286,24 @@ public:
             bool succeeded = R_SUCCEEDED(debug_handler.Attach());
             attach_button->setText(succeeded ? "Attached!" : "Failure to attach.");
             if (succeeded) {
-                debug_handler.SetBreakpoint(0xD317BC, &overworld_breakpoint_idx, [this](ThreadContext* thread_context){
-                    // overworld spawn event
+                // debug_handler.SetBreakpoint(0xD317BC, &overworld_breakpoint_idx, [this](ThreadContext* thread_context){
+                //     // overworld spawn event
 
-                    u64 pokemon_addr = thread_context->cpu_gprs[20].x;
-                    u32 species;
-                    u64 fixed_seed;
-                    debug_handler.ReadMemory(&species, pokemon_addr, sizeof(species));
-                    debug_handler.ReadMemory(&fixed_seed, pokemon_addr + 80, sizeof(fixed_seed));
+                //     u64 pokemon_addr = thread_context->cpu_gprs[20].x;
+                //     u32 species;
+                //     u64 fixed_seed;
+                //     debug_handler.ReadMemory(&species, pokemon_addr, sizeof(species));
+                //     debug_handler.ReadMemory(&fixed_seed, pokemon_addr + 80, sizeof(fixed_seed));
                     
-                    if (species)
-                    {
-                        char text[23];
-                        snprintf(text, 23, "#%d, Seed: 0x%08X", species, fixed_seed);
-                        auto new_pokemon = new tsl::elm::ListItem(std::string(text));
-                        list->addItem(new_pokemon);
-                        overworld_pokemon.push_back(new_pokemon);
-                    }
-                });
+                //     if (species)
+                //     {
+                //         char text[23];
+                //         snprintf(text, 23, "#%d, Seed: 0x%08X", species, fixed_seed);
+                //         auto new_pokemon = new tsl::elm::ListItem(std::string(text));
+                //         list->addItem(new_pokemon);
+                //         overworld_pokemon.push_back(new_pokemon);
+                //     }
+                // });
                 debug_handler.Continue();
             }
             
@@ -359,7 +359,7 @@ public:
             snprintf(text, 11, "NPCs: %d", npc_count);
             npc_counter->setText(std::string(text));
 
-            debug_handler.PollForBreaks();
+            // debug_handler.PollForBreaks();
         }
     }
 
