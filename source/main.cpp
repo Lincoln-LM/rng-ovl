@@ -349,7 +349,8 @@ public:
                 if (
                     initialization_function == 0xd600f0 ||
                     initialization_function == 0xd6f6d0 ||
-                    initialization_function == 0xdaa010)
+                    initialization_function == 0xdaa010 ||
+                    initialization_function == 0xd5ba20)
                 {
                     npc_count++;
                 }
