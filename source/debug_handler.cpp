@@ -142,8 +142,13 @@ Result DebugHandler::GetCurrentBreakpoint(DebugEventInfo *event_info, Breakpoint
     ThreadContext thread_context;
     R_TRY(GetThreadContext(&thread_context, event_info->thread_id, RegisterGroup_All));
     u64 break_address = thread_context.pc.x - main_base;
-    *breakpoint_out = *std::find_if(breakpoints.begin(), breakpoints.end(), [&break_address](const Breakpoint &bp)
-                                    { return bp.address == break_address; });
+    auto bp = *std::find_if(breakpoints.begin(), breakpoints.end(), [&break_address](const Breakpoint &bp)
+                            { return bp.address == break_address; });
+    if (bp == breakpoints.end())
+    {
+        R_THROW(1);
+    }
+    *breakpoint_out = *bp;
     R_SUCCEED();
 }
 
@@ -164,7 +169,7 @@ Result DebugHandler::ResumeFromBreakpoint(Breakpoint breakpoint)
     // restore original instruction
     R_TRY(WriteMainMemory(&breakpoint.original_instruction, breakpoint.address, sizeof(breakpoint.original_instruction)));
     // release process from breakpoint
-    Continue();
+    R_TRY(Continue());
     // catch break at next instruction
     s32 dummy_index;
     // stall until break
@@ -178,7 +183,7 @@ Result DebugHandler::ResumeFromBreakpoint(Breakpoint breakpoint)
     // restore next instruction
     R_TRY(WriteMainMemory(&next_instr, breakpoint.address + 4, sizeof(next_instr)));
     // release process
-    Continue();
+    R_TRY(Continue());
 
     R_SUCCEED();
 }
@@ -211,11 +216,17 @@ Result DebugHandler::Poll()
     if (broken)
     {
         Breakpoint bp;
-        R_TRY(GetCurrentBreakpoint(&event_info, &bp));
-        ThreadContext thread_context;
-        R_TRY(GetThreadContext(&thread_context, event_info.thread_id, RegisterGroup_All));
-        bp.on_break(&thread_context);
-        R_TRY(ResumeFromBreakpoint(bp));
+        if (R_SUCCEEDED(GetCurrentBreakpoint(&event_info, &bp)))
+        {
+            ThreadContext thread_context;
+            R_TRY(GetThreadContext(&thread_context, event_info.thread_id, RegisterGroup_All));
+            bp.on_break(&thread_context);
+            R_TRY(ResumeFromBreakpoint(bp));
+        }
+        else
+        {
+            R_TRY(Continue());
+        }
     }
     R_SUCCEED()
 }
