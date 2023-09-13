@@ -142,8 +142,8 @@ Result DebugHandler::GetCurrentBreakpoint(DebugEventInfo *event_info, Breakpoint
     ThreadContext thread_context;
     R_TRY(GetThreadContext(&thread_context, event_info->thread_id, RegisterGroup_All));
     u64 break_address = thread_context.pc.x - main_base;
-    auto bp = *std::find_if(breakpoints.begin(), breakpoints.end(), [&break_address](const Breakpoint &bp)
-                            { return bp.address == break_address; });
+    auto bp = std::find_if(breakpoints.begin(), breakpoints.end(), [&break_address](const Breakpoint &bp)
+                           { return bp.address == break_address; });
     if (bp == breakpoints.end())
     {
         R_THROW(1);
