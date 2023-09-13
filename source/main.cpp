@@ -14,7 +14,7 @@ public:
     {
         debug_handler = DebugHandler::GetInstance();
 
-        auto frame = new tsl::elm::OverlayFrame("RNG Overlay", "v0.0.0");
+        auto frame = new tsl::elm::OverlayFrame("RNG Overlay", "v0.0.1");
 
         list = new tsl::elm::List();
         attach_button = new tsl::elm::ListItem("Attach...");
