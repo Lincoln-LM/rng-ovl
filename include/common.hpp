@@ -1,5 +1,24 @@
 #include <switch.h>
 
+// butchered macros from ams
+#define R_SUCCEED() \
+    {               \
+        return 0;   \
+    }
+
+#define R_THROW(res_expr) \
+    {                     \
+        return res_expr;  \
+    }
+
+#define R_TRY(res_expr)                                                     \
+    {                                                                       \
+        if (const auto _tmp_r_try_rc = (res_expr); R_FAILED(_tmp_r_try_rc)) \
+        {                                                                   \
+            R_THROW(_tmp_r_try_rc);                                         \
+        }                                                                   \
+    }
+
 enum ProcessExitReason : u32
 {
     ProcessExitReason_ExitProcess = 0,
