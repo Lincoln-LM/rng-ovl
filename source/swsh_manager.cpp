@@ -100,3 +100,9 @@ void SwShManager::update()
         debug_handler->Poll();
     }
 }
+u16 SwShManager::getTsv()
+{
+    u32 id32;
+    debug_handler->ReadHeapMemory(&id32, 0x45068F18 + 0xA0, sizeof(id32));
+    return id32 ^ (id32 >> 16);
+}

@@ -44,6 +44,7 @@ public:
     void overworldSpawnEvent(ThreadContext *thread_context);
     void objectCreationEvent(ThreadContext *thread_context);
     void update();
+    u16 getTsv();
     int getNpcCount() { return npc_count; }
     std::unordered_map<u64, sOverworldPokemon> getOverworldPokemon() { return overworld_pokemon; }
 
