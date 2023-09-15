@@ -38,7 +38,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_TITLE	:=	RNG Overlay
-APP_VERSION :=	0.0.0
+APP_VERSION :=	0.0.2
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build

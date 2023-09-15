@@ -1,4 +1,6 @@
 #include <switch.h>
+#ifndef COMMON_HPP
+#define COMMON_HPP
 
 // butchered macros from ams
 #define R_SUCCEED() \
@@ -197,3 +199,5 @@ typedef struct
     u64 address;
     std::function<void(ThreadContext *)> on_break;
 } Breakpoint;
+
+#endif

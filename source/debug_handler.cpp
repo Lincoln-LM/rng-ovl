@@ -127,6 +127,13 @@ Result DebugHandler::DisableBreakpoint(u64 idx)
     R_SUCCEED();
 }
 
+Result DebugHandler::EnableBreakpoint(u64 idx)
+{
+    u32 dummy_instr;
+    R_TRY(WriteBreakpoint(breakpoints[idx].address, &dummy_instr));
+    R_SUCCEED();
+}
+
 Result DebugHandler::DisableAllBreakpoints()
 {
     for (int i = 0; i < breakpoints.size(); i++)
@@ -160,6 +167,12 @@ Result DebugHandler::Continue()
     R_SUCCEED();
 }
 
+Result DebugHandler::Stall()
+{
+    s32 dummy_index;
+    return svcWaitSynchronization(&dummy_index, &debug_handle, 1, -1);
+}
+
 Result DebugHandler::ResumeFromBreakpoint(Breakpoint breakpoint)
 {
     // TODO: jump instructions where the next instruction to execute is not just +4
@@ -171,9 +184,8 @@ Result DebugHandler::ResumeFromBreakpoint(Breakpoint breakpoint)
     // release process from breakpoint
     R_TRY(Continue());
     // catch break at next instruction
-    s32 dummy_index;
     // stall until break
-    R_TRY(svcWaitSynchronization(&dummy_index, &debug_handle, 1, -1));
+    R_TRY(Stall());
     DebugEventInfo next_event_info;
     R_TRY(GetProcessDebugEvent(&next_event_info));
     // TODO: redundancy for if break isnt caught?

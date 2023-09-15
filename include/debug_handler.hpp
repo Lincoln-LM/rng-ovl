@@ -3,6 +3,8 @@
 #include <vector>
 #include "common.hpp"
 
+#ifndef DEBUG_HANDLER_HPP
+#define DEBUG_HANDLER_HPP
 class DebugHandler
 {
 public:
@@ -26,10 +28,14 @@ public:
     Result SetBreakpoint(u64 address, u64 *idx_out, std::function<void(ThreadContext *)> on_break);
     // Disable the breakpoint with the given idx.
     Result DisableBreakpoint(u64 idx);
+    // Ensable the breakpoint with the given idx.
+    Result EnableBreakpoint(u64 idx);
     // Disable all breakpoints.
     Result DisableAllBreakpoints();
     // Find the currently broken breakpoint based on the program counter.
     Result GetCurrentBreakpoint(DebugEventInfo *event_info, Breakpoint *breakpoint_out);
+    // Stall until the next debug event
+    Result Stall();
     // Continue from a debug event.
     Result Continue();
     // Resume from the given breakpoint.
@@ -83,3 +89,4 @@ private:
     DebugHandler(){};
     static DebugHandler *instance;
 };
+#endif
