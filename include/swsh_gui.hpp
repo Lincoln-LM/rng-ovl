@@ -197,7 +197,7 @@ public:
     }
 
 private:
-    bool is_focused;
+    bool is_focused = true;
     sOverworldPokemon pokemon;
     SwShManager *swsh_manager;
 };
