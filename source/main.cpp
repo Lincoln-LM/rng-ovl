@@ -90,6 +90,9 @@ public:
         Result rc = ldrDmntInitialize();
         if (R_FAILED(rc))
             fatalThrow(rc);
+        rc = pminfoInitialize();
+        if (R_FAILED(rc))
+            fatalThrow(rc);
     }
     virtual void exitServices() override
     {

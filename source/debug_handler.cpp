@@ -95,6 +95,17 @@ Result DebugHandler::Start()
     R_SUCCEED()
 }
 
+Result DebugHandler::GetTitleId(u64 *title_id_out)
+{
+    if (!attached)
+    {
+        R_THROW(1);
+    }
+    R_TRY(pminfoGetProgramId(title_id_out, process_id));
+
+    R_SUCCEED();
+}
+
 Result DebugHandler::WriteBreakpoint(u64 address, u32 *instr_out)
 {
     // ARMv8 'BRK #0'

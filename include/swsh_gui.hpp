@@ -282,10 +282,17 @@ public:
     virtual void update() override
     {
         swsh_manager->update();
-        char npc_text[11];
-        snprintf(npc_text, 11, "NPCs: %d", swsh_manager->getNpcCount());
-        npc_counter->setText(std::string(npc_text));
-        addPokemon(swsh_manager->getOverworldPokemon());
+        if (!swsh_manager->getIsValid())
+        {
+            npc_counter->setText("Loaded application is not SwSh.");
+        }
+        else
+        {
+            char npc_text[11];
+            snprintf(npc_text, 11, "NPCs: %d", swsh_manager->getNpcCount());
+            npc_counter->setText(std::string(npc_text));
+            addPokemon(swsh_manager->getOverworldPokemon());
+        }
     }
 
 private:

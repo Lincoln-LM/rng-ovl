@@ -5,12 +5,28 @@ SwShManager *SwShManager::instance = nullptr;
 SwShManager::SwShManager()
 {
     debug_handler = DebugHandler::GetInstance();
-    // end of rng generation for overworld pokemon
-    debug_handler->SetBreakpoint(0xD317BC, &overworld_breakpoint_idx, [this](ThreadContext *thread_context)
-                                 { overworldSpawnEvent(thread_context); });
-    // equivalent of npc_vector.push_back(newest_npc)
-    debug_handler->SetBreakpoint(0xEA2FE4, &object_creation_breakpoint_idx, [this](ThreadContext *thread_context)
-                                 { objectCreationEvent(thread_context); });
+}
+
+bool SwShManager::tryInitialize()
+{
+    int version = getVersion();
+    bool is_swsh = version != -1;
+    if (!is_valid && is_swsh)
+    {
+        // end of rng generation for overworld pokemon
+        debug_handler->SetBreakpoint(overworld_generation_address[version], &overworld_breakpoint_idx, [this](ThreadContext *thread_context)
+                                     { overworldSpawnEvent(thread_context); });
+        // equivalent of npc_vector.push_back(newest_npc)
+        debug_handler->SetBreakpoint(object_creation_address[version], &object_creation_breakpoint_idx, [this](ThreadContext *thread_context)
+                                     { objectCreationEvent(thread_context); });
+    }
+    is_valid = is_swsh;
+    return is_valid;
+}
+
+bool SwShManager::getIsValid()
+{
+    return is_valid;
 }
 
 SwShManager *SwShManager::GetInstance()
@@ -54,8 +70,9 @@ void SwShManager::objectCreationEvent(ThreadContext *thread_context)
 }
 void SwShManager::update()
 {
-    if (debug_handler->isAttached() && !debug_handler->isBroken())
+    if (debug_handler->isAttached() && !debug_handler->isBroken() && tryInitialize())
     {
+        int version = getVersion();
         for (auto &pair : overworld_pokemon)
         {
             pair.second.loaded = false;
@@ -78,7 +95,7 @@ void SwShManager::update()
             update_function = debug_handler->normalizeMain(update_function);
             initialization_function = debug_handler->normalizeMain(initialization_function);
             // is PokemonObject
-            if (update_function == 0xd5efe0)
+            if (update_function == pokemon_object_update_address[version])
             {
                 u64 unique_hash;
                 debug_handler->ReadMemory(&temp, current_npc, sizeof(temp));
@@ -89,10 +106,10 @@ void SwShManager::update()
                 }
             }
             if (
-                initialization_function == 0xd600f0 ||
-                initialization_function == 0xd6f6d0 ||
-                initialization_function == 0xdaa010)
-            // TODO: 0xd5ba20 can cause menu close advances
+                initialization_function == npc_init_address_0[version] ||
+                initialization_function == npc_init_address_1[version] ||
+                initialization_function == npc_init_address_2[version])
+            // TODO: 0xd5ba20 (shield) can cause menu close advances
             {
                 npc_count++;
             }

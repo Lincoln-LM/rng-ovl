@@ -21,6 +21,8 @@ public:
     // Process attach debug event.
     Result Start();
 
+    Result GetTitleId(u64 *title_id_out);
+
     // breakpoint methods
     // Write a software breakpoint instruction to the given address and read the original instruction.
     Result WriteBreakpoint(u64 address, u32 *instr_out);
