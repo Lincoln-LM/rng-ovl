@@ -83,5 +83,9 @@ private:
     const u64 npc_init_address_0[2] = {0xD600F0 - 0x30, 0xD600F0};
     const u64 npc_init_address_1[2] = {0xD6F6D0 - 0x30, 0xD6F6D0};
     const u64 npc_init_address_2[2] = {0xDAA010 - 0x30, 0xDAA010};
+    const u64 npc_init_address_3[2] = {0xDB4A40 - 0x30, 0xDB4A40};
+
+    const u64 npc_sub_address_0[2] = {0xCF1A20 - 0x30, 0xCF1A20};
+    const u64 npc_sub_address_1[2] = {0xDB9140 - 0x30, 0xDB9140};
 };
 #endif

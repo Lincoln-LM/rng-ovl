@@ -86,10 +86,11 @@ void SwShManager::update()
         for (u64 current_npc = list_start; current_npc < list_end; current_npc += 8)
         {
             u64 temp;
+            u64 arg0;
             u64 initialization_function;
             u64 update_function;
-            debug_handler->ReadMemory(&temp, current_npc, sizeof(temp));
-            debug_handler->ReadMemory(&temp, temp, sizeof(temp));
+            debug_handler->ReadMemory(&arg0, current_npc, sizeof(arg0));
+            debug_handler->ReadMemory(&temp, arg0, sizeof(temp));
             debug_handler->ReadMemory(&update_function, temp + 0x90, sizeof(temp));
             debug_handler->ReadMemory(&initialization_function, temp + 0xf0, sizeof(temp));
             update_function = debug_handler->normalizeMain(update_function);
@@ -112,6 +113,27 @@ void SwShManager::update()
             // TODO: 0xd5ba20 (shield) can cause menu close advances
             {
                 npc_count++;
+            }
+            else if (initialization_function == npc_init_address_3[version])
+            {
+                u64 sub_list_start;
+                u64 sub_list_end;
+                debug_handler->ReadMemory(&sub_list_start, arg0 + 0x1e8, sizeof(sub_list_start));
+                debug_handler->ReadMemory(&sub_list_end, arg0 + 0x1f0, sizeof(sub_list_end));
+                // actual logic near 0xdb4af8
+                for (u64 current_item = sub_list_start; current_item < sub_list_end; current_item += 8)
+                {
+                    debug_handler->ReadMemory(&temp, current_item, sizeof(temp));
+                    debug_handler->ReadMemory(&temp, temp + 0x50, sizeof(temp));
+                    debug_handler->ReadMemory(&temp, temp, sizeof(temp));
+                    u64 some_func = debug_handler->normalizeMain(temp);
+                    if (
+                        some_func == npc_sub_address_0[version] ||
+                        some_func == npc_sub_address_1[version])
+                    {
+                        npc_count++;
+                    }
+                }
             }
         }
         debug_handler->Poll();
