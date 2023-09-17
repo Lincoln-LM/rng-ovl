@@ -1,6 +1,7 @@
 #include <tesla.hpp>
 #include "swsh_manager.hpp"
 #include "species.hpp"
+#include "common.hpp"
 
 #ifndef SWSH_GUI_HPP
 #define SWSH_GUI_HPP
@@ -63,33 +64,6 @@ public:
 private:
     u64 state[2];
 };
-
-char *NATURES[25] = {
-    "Hardy",
-    "Lonely",
-    "Brave",
-    "Adamant",
-    "Naughty",
-    "Bold",
-    "Docile",
-    "Relaxed",
-    "Impish",
-    "Lax",
-    "Timid",
-    "Hasty",
-    "Serious",
-    "Jolly",
-    "Naive",
-    "Modest",
-    "Mild",
-    "Quiet",
-    "Bashful",
-    "Rash",
-    "Calm",
-    "Gentle",
-    "Sassy",
-    "Careful",
-    "Quirky"};
 
 std::string pokemonToString(sOverworldPokemon pokemon)
 {

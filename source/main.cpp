@@ -3,6 +3,7 @@
 #include <memory>
 #include "debug_handler.hpp"
 #include "swsh_gui.hpp"
+#include "sv_gui.hpp"
 
 // referenced: https://github.com/Atmosphere-NX/Atmosphere/tree/master/stratosphere/dmnt.gen2
 
@@ -50,6 +51,15 @@ public:
             } 
             return false; });
         list->addItem(swsh_button);
+        sv_button = new tsl::elm::ListItem("SV");
+        sv_button->setClickListener([this](u64 keys)
+                                    { 
+            if (keys & HidNpadButton_A) {
+                tsl::changeTo<SVGui>();
+                return true;
+            } 
+            return false; });
+        list->addItem(sv_button);
         frame->setContent(list);
 
         return frame;
@@ -78,6 +88,7 @@ private:
 
     tsl::elm::ListItem *attach_button;
     tsl::elm::ListItem *swsh_button;
+    tsl::elm::ListItem *sv_button;
 
     bool is_focused = true;
 };
