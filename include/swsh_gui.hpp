@@ -159,7 +159,7 @@ public:
             int index = rng.rand<6>();
             if (ivs[index] == 255)
             {
-                ivs[index] = rng.rand<32>();
+                ivs[index] = 31;
                 i++;
             }
         }
