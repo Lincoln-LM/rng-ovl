@@ -67,7 +67,6 @@ public:
         if (!swsh_manager->getIsValid())
         {
             npc_counter->setText("Loaded application is not SwSh.");
-            DebugHandler::GetInstance()->Detach();
         }
         else
         {

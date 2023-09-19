@@ -71,6 +71,10 @@ void SwShManager::objectCreationEvent(ThreadContext *thread_context)
 }
 void SwShManager::update()
 {
+    if (!getIsValid())
+    {
+        DebugHandler::GetInstance()->Detach();
+    }
     if (debug_handler->isAttached() && !debug_handler->isBroken() && tryInitialize())
     {
         int version = getVersion();
