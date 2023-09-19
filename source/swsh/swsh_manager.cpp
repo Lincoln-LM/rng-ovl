@@ -1,4 +1,4 @@
-#include "swsh_manager.hpp"
+#include "swsh.hpp"
 
 SwShManager *SwShManager::instance = nullptr;
 
@@ -41,11 +41,12 @@ void SwShManager::overworldSpawnEvent(ThreadContext *thread_context)
 {
     u64 pokemon_addr = thread_context->cpu_gprs[20].x;
     sOverworldPokemon pokemon;
-    debug_handler->ReadMemory(&pokemon.generation_data, pokemon_addr, sizeof(pokemon));
+    debug_handler->ReadMemory(&pokemon.init_spec, pokemon_addr, sizeof(pokemon));
+    pokemon.generatedFixed(getTsv());
     pokemon.loaded = true;
     new_spawn = true;
 
-    if (pokemon.generation_data.species)
+    if (pokemon.init_spec.species)
     {
         latest_pokemon = pokemon;
         debug_handler->EnableBreakpoint(object_creation_breakpoint_idx);

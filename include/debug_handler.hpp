@@ -5,6 +5,14 @@
 
 #ifndef DEBUG_HANDLER_HPP
 #define DEBUG_HANDLER_HPP
+
+typedef struct
+{
+    u32 original_instruction;
+    u64 address;
+    std::function<void(ThreadContext *)> on_break;
+} Breakpoint;
+
 class DebugHandler
 {
 public:

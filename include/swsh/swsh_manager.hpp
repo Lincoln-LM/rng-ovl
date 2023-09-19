@@ -1,39 +1,10 @@
 #include <map>
 #include <tesla.hpp>
+#include "overworld_pokemon.hpp"
 #include "debug_handler.hpp"
-#include "species.hpp"
 
 #ifndef SWSH_MANAGER_HPP
 #define SWSH_MANAGER_HPP
-
-typedef struct
-{
-    struct __attribute__((packed))
-    {
-        Species species;
-        u8 pad2[6];
-        u8 shininess;
-        u8 pad9[3];
-        u16 nature;
-        u8 pad14[2];
-        u8 gender;
-        u8 pad17[3];
-        u8 ability;
-        u8 pad21[7];
-        u16 held_item;
-        u8 pad30[2];
-        u16 egg_move;
-        u8 pad34[19];
-        u8 guaranteed_ivs;
-        u8 pad54[18];
-        u16 mark;
-        u16 brilliant;
-        u8 pad76[4];
-        u32 seed;
-    } generation_data;
-    u64 unique_hash;
-    bool loaded;
-} sOverworldPokemon;
 
 class SwShManager
 {

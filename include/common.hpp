@@ -173,7 +173,6 @@ struct DebugEventInfo
     u64 thread_id;
     DebugInfo info;
 };
-static_assert(sizeof(DebugEventInfo) >= 0x40);
 
 enum DebugEventFlag : u32
 {
@@ -192,12 +191,5 @@ enum ThreadContextFlag : u32
     ThreadContextFlag_SetSingleStep = (1u << 30),
     ThreadContextFlag_ClearSingleStep = (1u << 31),
 };
-
-typedef struct
-{
-    u32 original_instruction;
-    u64 address;
-    std::function<void(ThreadContext *)> on_break;
-} Breakpoint;
 
 #endif

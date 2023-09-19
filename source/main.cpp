@@ -2,20 +2,18 @@
 #include <tesla.hpp>
 #include <memory>
 #include "debug_handler.hpp"
-#include "swsh_gui.hpp"
+#include "swsh.hpp"
 
-// referenced: https://github.com/Atmosphere-NX/Atmosphere/tree/master/stratosphere/dmnt.gen2
-
-class RNGGui : public tsl::Gui
+class MainGui : public tsl::Gui
 {
 public:
-    RNGGui() {}
+    MainGui() {}
 
     virtual tsl::elm::Element *createUI() override
     {
         debug_handler = DebugHandler::GetInstance();
 
-        auto frame = new tsl::elm::OverlayFrame("RNG Overlay", "v0.0.2");
+        auto frame = new tsl::elm::OverlayFrame("RNG Overlay", "v0.0.3");
 
         auto list = new tsl::elm::List();
         attach_button = new tsl::elm::ListItem("Attach...");
@@ -28,12 +26,11 @@ public:
                 return false;
             }
             if (debug_handler->isAttached()) {
-                attach_button->setText(R_SUCCEEDED(debug_handler->Detach()) ? "Attach..." : "Failure to detach.");
+                debug_handler->Detach();
                 return true;
             }
 
             bool succeeded = R_SUCCEEDED(debug_handler->Attach());
-            attach_button->setText(succeeded ? "Detach" : "Failure to attach.");
             if (succeeded) {
                 debug_handler->Continue();
             }
@@ -57,9 +54,17 @@ public:
 
     virtual void update() override
     {
-        if (debug_handler->isAttached() && !debug_handler->isBroken())
+        if (debug_handler->isAttached())
         {
-            debug_handler->Poll();
+            attach_button->setText("Detach");
+            if (!debug_handler->isBroken())
+            {
+                debug_handler->Poll();
+            }
+        }
+        else
+        {
+            attach_button->setText("Attach...");
         }
     }
 
@@ -105,7 +110,7 @@ public:
 
     virtual std::unique_ptr<tsl::Gui> loadInitialGui() override
     {
-        return initially<RNGGui>();
+        return initially<MainGui>();
     }
 };
 

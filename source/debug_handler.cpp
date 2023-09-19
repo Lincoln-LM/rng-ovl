@@ -17,7 +17,6 @@ Result DebugHandler::Attach()
     if (attached)
     {
         R_TRY(Detach());
-        attached = false;
     }
     // find & hook into application
     u64 pid;
@@ -40,7 +39,6 @@ Result DebugHandler::Attach()
     s32 module_count = 0;
     R_TRY(ldrDmntGetProcessModuleInfo(pid, modules, 2, &module_count));
 
-    LoaderModuleInfo *proc_module = 0;
     if (module_count == 2)
     {
         main_base = modules[1].base_address;
@@ -59,7 +57,8 @@ Result DebugHandler::Detach()
     {
         R_SUCCEED();
     }
-    R_TRY(DisableAllBreakpoints());
+    // try to close handle even if removing bps fails
+    DisableAllBreakpoints();
     R_TRY(svcCloseHandle(debug_handle));
     debug_handle = 0;
     attached = false;
@@ -77,17 +76,8 @@ Result DebugHandler::Start()
         DebugEventInfo debug_event;
         R_TRY(svcGetDebugEvent(&debug_event, debug_handle));
 
-        switch (debug_event.type)
-        {
-        case DebugEvent_Exception:
-            if (debug_event.info.exception.type == DebugException_DebuggerAttached)
-            {
-                attached = true;
-            }
-            break;
-        default:
-            break;
-        }
+        attached = (debug_event.type == DebugEvent_Exception &&
+                    debug_event.info.exception.type == DebugException_DebuggerAttached);
     }
 
     broken = true;
