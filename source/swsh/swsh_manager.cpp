@@ -71,10 +71,6 @@ void SwShManager::objectCreationEvent(ThreadContext *thread_context)
 }
 void SwShManager::update()
 {
-    if (!getIsValid())
-    {
-        DebugHandler::GetInstance()->Detach();
-    }
     if (debug_handler->isAttached() && !debug_handler->isBroken() && tryInitialize())
     {
         int version = getVersion();
@@ -84,6 +80,16 @@ void SwShManager::update()
         }
 
         npc_count = 0;
+        u64 temp;
+        debug_handler->ReadMainMemory(&temp, 0x26365B8, sizeof(temp));
+        debug_handler->ReadMemory(&temp, temp + 0x90, sizeof(temp));
+        debug_handler->ReadMemory(&temp, temp + 0x408, sizeof(temp));
+        debug_handler->ReadMemory(&temp, temp + 0x3F8, sizeof(temp));
+        debug_handler->ReadMemory(&weather, temp + 0x60, sizeof(weather));
+        if (weather > Weather::MIST)
+        {
+            weather = Weather::INVALID;
+        }
         u64 list_start;
         u64 list_end;
         debug_handler->ReadHeapMemory(&list_start, 0x44129298 + 0xb0, sizeof(list_start));
@@ -142,6 +148,10 @@ void SwShManager::update()
             }
         }
         debug_handler->Poll();
+    }
+    if (!getIsValid())
+    {
+        DebugHandler::GetInstance()->Detach();
     }
 }
 u16 SwShManager::getTsv()

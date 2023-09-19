@@ -2,6 +2,7 @@
 #include <tesla.hpp>
 #include "overworld_pokemon.hpp"
 #include "debug_handler.hpp"
+#include "weather.hpp"
 
 #ifndef SWSH_MANAGER_HPP
 #define SWSH_MANAGER_HPP
@@ -33,6 +34,7 @@ public:
     bool tryInitialize();
     bool getIsValid();
     int getNpcCount() { return npc_count; }
+    Weather getWeather() { return weather; }
     std::unordered_map<u64, sOverworldPokemon> getOverworldPokemon() { return overworld_pokemon; }
 
 private:
@@ -46,6 +48,7 @@ private:
     sOverworldPokemon latest_pokemon;
     bool new_spawn = false;
     int npc_count = 0;
+    Weather weather = Weather::INVALID;
     bool is_valid = false;
 
     const u64 overworld_generation_address[2] = {0xD317BC - 0x30, 0xD317BC};

@@ -1,6 +1,7 @@
 #include <tesla.hpp>
 #include "swsh_manager.hpp"
 #include "species.hpp"
+#include "weather.hpp"
 #include "overworld_pokemon_gui.hpp"
 
 #ifndef SWSH_GUI_HPP
@@ -17,6 +18,8 @@ public:
         list = new tsl::elm::List();
         npc_counter = new tsl::elm::ListItem("NPCs: ?");
         list->addItem(npc_counter);
+        weather_display = new tsl::elm::ListItem("Weather: ?");
+        list->addItem(weather_display);
         frame->setContent(list);
 
         return frame;
@@ -73,6 +76,10 @@ public:
             char npc_text[11];
             snprintf(npc_text, 11, "NPCs: %d", swsh_manager->getNpcCount());
             npc_counter->setText(std::string(npc_text));
+            char weather_text[30];
+            Weather weather = swsh_manager->getWeather();
+            snprintf(weather_text, 30, "Weather: %s", weather == Weather::INVALID ? "?" : WEATHER_LUT[weather].c_str());
+            weather_display->setText(std::string(weather_text));
             addPokemon(swsh_manager->getOverworldPokemon());
         }
     }
@@ -81,6 +88,7 @@ private:
     SwShManager *swsh_manager;
     tsl::elm::List *list;
     tsl::elm::ListItem *npc_counter;
+    tsl::elm::ListItem *weather_display;
     std::unordered_map<u64, std::pair<bool, OverworldPokemonItem *>> overworld_pokemon_items;
     bool is_focused = true;
 };
