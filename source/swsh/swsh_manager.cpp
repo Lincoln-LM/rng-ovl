@@ -41,7 +41,7 @@ void SwShManager::overworldSpawnEvent(ThreadContext *thread_context)
 {
     u64 pokemon_addr = thread_context->cpu_gprs[20].x;
     sOverworldPokemon pokemon;
-    debug_handler->ReadMemory(&pokemon.init_spec, pokemon_addr, sizeof(pokemon));
+    debug_handler->ReadMemory(&pokemon.init_spec, pokemon_addr, sizeof(pokemon.init_spec));
     pokemon.generatedFixed(getTsv());
     pokemon.loaded = true;
     new_spawn = true;

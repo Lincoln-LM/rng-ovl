@@ -15,7 +15,7 @@ typedef struct
         u8 shininess;
         u8 pad9[3];
         Nature nature;
-        u8 pad15[1];
+        u8 pad13[3];
         u8 gender;
         u8 pad17[3];
         u8 ability;
