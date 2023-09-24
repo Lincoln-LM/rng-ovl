@@ -80,13 +80,13 @@ void SwShManager::objectCreationEvent(ThreadContext *thread_context)
     u64 hash;
     debug_handler->ReadMemory(&temp, thread_context->cpu_gprs[8].x, sizeof(temp));
     debug_handler->ReadMemory(&hash, temp + 0x1a0, sizeof(hash));
-    if (new_spawn || overworld_pokemon.find(hash) == overworld_pokemon.end())
+    if (new_spawn)
     {
         new_spawn = false;
         latest_pokemon.unique_hash = hash;
         overworld_pokemon[latest_pokemon.unique_hash] = latest_pokemon;
     }
-    else
+    else if (overworld_pokemon.find(hash) != overworld_pokemon.end())
     {
         overworld_pokemon[hash].loaded = true;
     }
