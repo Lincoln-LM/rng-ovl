@@ -20,6 +20,32 @@ public:
         list->addItem(npc_counter);
         weather_display = new tsl::elm::ListItem("Weather: ?");
         list->addItem(weather_display);
+        rain_calibration_display = new tsl::elm::ListItem("Rain Calibration: ?");
+        rain_calibration_display->setClickListener([this](u64 keys)
+                                                   {
+            if (!is_focused) {
+                return false;
+            }
+            if (!(keys & HidNpadButton_A)) {
+                return false;
+            }
+            swsh_manager->startRainCalibration();
+            
+            return true; });
+        list->addItem(rain_calibration_display);
+        fly_calibration_display = new tsl::elm::ListItem("Fly Calibration: ?");
+        fly_calibration_display->setClickListener([this](u64 keys)
+                                                  {
+            if (!is_focused) {
+                return false;
+            }
+            if (!(keys & HidNpadButton_A)) {
+                return false;
+            }
+            swsh_manager->startFlyCalibration();
+            
+            return true; });
+        list->addItem(fly_calibration_display);
         frame->setContent(list);
 
         return frame;
@@ -76,10 +102,20 @@ public:
             char npc_text[11];
             snprintf(npc_text, 11, "NPCs: %d", swsh_manager->getNpcCount());
             npc_counter->setText(std::string(npc_text));
+
             char weather_text[30];
             Weather weather = swsh_manager->getWeather();
             snprintf(weather_text, 30, "Weather: %s", weather == Weather::INVALID ? "?" : WEATHER_LUT[weather].c_str());
             weather_display->setText(std::string(weather_text));
+
+            char rain_calibration_text[30];
+            snprintf(rain_calibration_text, 30, "Rain Calibration: %d", swsh_manager->getRainCalibration());
+            rain_calibration_display->setText(std::string(rain_calibration_text));
+
+            char fly_calibration_text[30];
+            snprintf(fly_calibration_text, 30, "Fly Calibration: %d, NPC: %d", swsh_manager->getFlyCalibration(), swsh_manager->getFlyNPCCalibration());
+            fly_calibration_display->setText(std::string(fly_calibration_text));
+
             addPokemon(swsh_manager->getOverworldPokemon());
         }
     }
@@ -89,6 +125,8 @@ private:
     tsl::elm::List *list;
     tsl::elm::ListItem *npc_counter;
     tsl::elm::ListItem *weather_display;
+    tsl::elm::ListItem *rain_calibration_display;
+    tsl::elm::ListItem *fly_calibration_display;
     std::unordered_map<u64, std::pair<bool, OverworldPokemonItem *>> overworld_pokemon_items;
     bool is_focused = true;
 };

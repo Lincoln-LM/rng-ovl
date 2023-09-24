@@ -19,6 +19,24 @@ bool SwShManager::tryInitialize()
         // equivalent of npc_vector.push_back(newest_npc)
         debug_handler->SetBreakpoint(object_creation_address[version], &object_creation_breakpoint_idx, [this](ThreadContext *thread_context)
                                      { objectCreationEvent(thread_context); });
+        // run before the two rand(20001) that are used during rain/thunderstorm, disabled by default
+        debug_handler->SetBreakpoint(rain_rand_address[version], &rain_breakpoint_idx, [this](ThreadContext *thread_context)
+                                     { rain_calibration += 2; });
+        // GetPublicRand, called with x0=100 for an unknown purpose while flying
+        debug_handler->SetBreakpoint(fly_rand_address_0[version], &fly_breakpoint_0_idx, [this](ThreadContext *thread_context)
+                                     { fly_calibration++; });
+        // unknown rand(100) that happens when flying
+        debug_handler->SetBreakpoint(fly_rand_address_1[version], &fly_breakpoint_1_idx, [this](ThreadContext *thread_context)
+                                     { fly_calibration++; });
+        // npc rand(91), called additional times upon fly
+        debug_handler->SetBreakpoint(npc_rand_address[version], &fly_npc_breakpoint_idx, [this](ThreadContext *thread_context)
+                                     { fly_npc_calibration++; });
+
+        // only enable when calibrating
+        debug_handler->DisableBreakpoint(fly_breakpoint_0_idx);
+        debug_handler->DisableBreakpoint(fly_breakpoint_1_idx);
+        debug_handler->DisableBreakpoint(fly_npc_breakpoint_idx);
+        debug_handler->DisableBreakpoint(rain_breakpoint_idx);
     }
     is_valid = is_swsh;
     return is_valid;
@@ -45,6 +63,10 @@ void SwShManager::overworldSpawnEvent(ThreadContext *thread_context)
     pokemon.generatedFixed(getTsv());
     pokemon.loaded = true;
     new_spawn = true;
+    debug_handler->DisableBreakpoint(fly_breakpoint_0_idx);
+    debug_handler->DisableBreakpoint(fly_breakpoint_1_idx);
+    debug_handler->DisableBreakpoint(fly_npc_breakpoint_idx);
+    debug_handler->DisableBreakpoint(rain_breakpoint_idx);
 
     if (pokemon.init_spec.species)
     {
@@ -68,6 +90,19 @@ void SwShManager::objectCreationEvent(ThreadContext *thread_context)
     {
         overworld_pokemon[hash].loaded = true;
     }
+}
+void SwShManager::startRainCalibration()
+{
+    rain_calibration = 0;
+    debug_handler->EnableBreakpoint(rain_breakpoint_idx);
+}
+void SwShManager::startFlyCalibration()
+{
+    fly_calibration = 0;
+    fly_npc_calibration = 0;
+    debug_handler->EnableBreakpoint(fly_breakpoint_0_idx);
+    debug_handler->EnableBreakpoint(fly_breakpoint_1_idx);
+    debug_handler->EnableBreakpoint(fly_npc_breakpoint_idx);
 }
 void SwShManager::update()
 {
@@ -102,8 +137,8 @@ void SwShManager::update()
             u64 update_function;
             debug_handler->ReadMemory(&arg0, current_npc, sizeof(arg0));
             debug_handler->ReadMemory(&temp, arg0, sizeof(temp));
-            debug_handler->ReadMemory(&update_function, temp + 0x90, sizeof(temp));
-            debug_handler->ReadMemory(&initialization_function, temp + 0xf0, sizeof(temp));
+            debug_handler->ReadMemory(&update_function, temp + 0x90, sizeof(update_function));
+            debug_handler->ReadMemory(&initialization_function, temp + 0xf0, sizeof(initialization_function));
             update_function = debug_handler->normalizeMain(update_function);
             initialization_function = debug_handler->normalizeMain(initialization_function);
             // is PokemonObject

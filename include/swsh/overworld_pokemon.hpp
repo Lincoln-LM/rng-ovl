@@ -50,7 +50,7 @@ typedef struct
 
         fixed_info.ec = rng.rand<0xFFFFFFFF>();
         fixed_info.pid = rng.rand<0xFFFFFFFF>();
-        bool pid_is_shiny = (((fixed_info.pid >> 16) ^ (fixed_info.pid & 0xFFFF)) ^ tsv) >> 4;
+        bool pid_is_shiny = !((((fixed_info.pid >> 16) ^ (fixed_info.pid & 0xFFFF)) ^ tsv) >> 4);
         if (init_spec.shininess == 2)
         {
             if (pid_is_shiny)
