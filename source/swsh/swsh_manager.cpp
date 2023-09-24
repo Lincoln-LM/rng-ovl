@@ -19,6 +19,10 @@ bool SwShManager::tryInitialize()
         // equivalent of npc_vector.push_back(newest_npc)
         debug_handler->SetBreakpoint(object_creation_address[version], &object_creation_breakpoint_idx, [this](ThreadContext *thread_context)
                                      { objectCreationEvent(thread_context); });
+        // run before the two rand(20001) that are used during rain/thunderstorm, disabled by default
+        debug_handler->SetBreakpoint(rain_rand_address[version], &rain_breakpoint_idx, [this](ThreadContext *thread_context)
+                                     { rainRandEvent(thread_context); });
+        debug_handler->DisableBreakpoint(rain_breakpoint_idx);
     }
     is_valid = is_swsh;
     return is_valid;
@@ -45,6 +49,7 @@ void SwShManager::overworldSpawnEvent(ThreadContext *thread_context)
     pokemon.generatedFixed(getTsv());
     pokemon.loaded = true;
     new_spawn = true;
+    debug_handler->DisableBreakpoint(rain_breakpoint_idx);
 
     if (pokemon.init_spec.species)
     {
@@ -68,6 +73,15 @@ void SwShManager::objectCreationEvent(ThreadContext *thread_context)
     {
         overworld_pokemon[hash].loaded = true;
     }
+}
+void SwShManager::rainRandEvent(ThreadContext *thread_context)
+{
+    rain_calibration += 2;
+}
+void SwShManager::startRainCalibration()
+{
+    rain_calibration = 0;
+    debug_handler->EnableBreakpoint(rain_breakpoint_idx);
 }
 void SwShManager::update()
 {
