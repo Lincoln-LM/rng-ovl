@@ -1,6 +1,7 @@
 #include <memory>
 #include <functional>
 #include <vector>
+#include <algorithm>
 #include "common.hpp"
 
 #ifndef DEBUG_HANDLER_HPP
